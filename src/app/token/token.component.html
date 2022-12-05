@@ -1,0 +1,44 @@
+<div class="main-container">
+  <div class="main-container__logo">
+    <img
+      class="main-container__logo--img"
+      src="../../assets/img/git_cat_logo.png"
+    />
+  </div>
+
+  <div class="form-container">
+    <h4>
+      Please provide your GitHub API Token to start browsing issues of public
+      repositories
+    </h4>
+
+    <form
+      class="form-container__form"
+      [formGroup]="tokenForm"
+      (ngSubmit)="addToken()"
+    >
+      <input
+        class="token-input"
+        type="text"
+        name="token"
+        placeholder="Enter GitHub token"
+        formControlName="token"
+      />
+      <br />
+      <div *ngIf="error" class="error-container">
+        <p>
+          The token you provided is invalid. Please follow these instructions to
+          generate a new Token
+        </p>
+        <a
+          href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+          target="_blank"
+          >How to generate a new token?</a
+        >
+      </div>
+      <button class="submit-button" [disabled]="!tokenForm.valid">
+        SUBMIT
+      </button>
+    </form>
+  </div>
+</div>

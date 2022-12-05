@@ -1,0 +1,45 @@
+<div class="repositories-container">
+  <div *ngIf="loading | async" class="loader"></div>
+  <div class="repositories-container__header" *ngIf="repos.length">
+    <h1>Explore Public Repositories</h1>
+    <h3 *ngIf="repos.length">
+      Here are {{ totalRepoCount }} public repositories...
+    </h3>
+    <div
+      class="repositories-container__header__sub-header"
+      *ngIf="repos.length"
+    >
+      <button class="back-button" (click)="backToAuth()">Add new token</button>
+    </div>
+  </div>
+  <div *ngFor="let repo of repos" class="repository-detail">
+    <div class="repository-detail__header" (click)="onRepoClick(repo)">
+      <h2>{{ repo.node.nameWithOwner }}</h2>
+      <div class="repository-detail__header--starcount">
+        <img
+          width="15"
+          height="15"
+          alt="github-logo"
+          src="../../assets/img/star.png"
+        />
+        <span>{{ repo.node.stargazerCount }}</span>
+      </div>
+    </div>
+    <div class="repository-detail__description">
+      <p>{{ repo.node.description }}</p>
+      <span
+        *ngFor="let language of repo.node.languages"
+        class="repository-detail__description--language"
+        >{{ language }}</span
+      >
+    </div>
+    <div class="repository-detail__footer">
+      <p>Created {{ repo.node.createdAt }}</p>
+      <p>Updated {{ repo.node.updatedAt }}</p>
+    </div>
+  </div>
+  <div class="repositories-container__pagination" *ngIf="repos.length">
+    <button (click)="onPreviousClick()" [disabled]="isPreviousDisabled">Previous</button>
+    <button (click)="onNextClick()" [disabled]="isNextDisabled">Next</button>
+  </div>
+</div>
