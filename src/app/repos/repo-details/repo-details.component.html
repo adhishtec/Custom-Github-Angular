@@ -17,8 +17,8 @@
         </button>
       </div>
 
-      <div *ngIf="issues.length" class="issue">
-        <div  *ngFor="let issue of issues">
+      <div *ngIf="issues.length" class="issues-container">
+        <div *ngFor="let issue of issues" class="issue">
           <div class="name">
             <div class="title">
               {{ issue.node.closed ? "closed" : "open" }}
