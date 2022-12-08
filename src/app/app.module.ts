@@ -8,6 +8,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { ReposComponent } from "./repos/repos.component";
 import { RepoDetailsComponent } from "./repos/repo-details/repo-details.component";
 import { TokenComponent } from "./token/token.component";
+import { InfiniteScrollModule } from "ngx-infinite-scroll";
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { TokenComponent } from "./token/token.component";
     AppRoutingModule,
     GraphQLModule,
     HttpClientModule,
+    InfiniteScrollModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

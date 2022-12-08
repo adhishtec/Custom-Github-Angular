@@ -12,7 +12,7 @@ import { Cursor, RepositoryNode } from "../interfaces/github";
   styleUrls: ["./repos.component.scss"],
 })
 export class ReposComponent implements OnInit {
-  error: any;
+  error: Error = new Error();
   loading = of(false);
   repos: RepositoryNode[] = [];
   startCursor = "";
@@ -29,7 +29,6 @@ export class ReposComponent implements OnInit {
   }
 
   getRepositories({ startCursor, endCursor }: Cursor = {}) {
-    this.repos = [];
     this.loading = of(true);
     this.graphQLService
       .publicRepository({ startCursor, endCursor })
@@ -43,10 +42,10 @@ export class ReposComponent implements OnInit {
       .subscribe(
         ({ data }: any) => {
           this.loading = of(false);
-          this.error = null;
+          this.error = new Error();
           this.totalRepoCount = data.search.repositoryCount;
-          this.checkPreviousOrNextDisabled()
-          this.repos = data.search.edges.map((repo: any) => {
+          this.checkPreviousOrNextDisabled();
+          const nextResult = data.search.edges.map((repo: any) => {
             return {
               ...repo,
               node: {
@@ -59,7 +58,9 @@ export class ReposComponent implements OnInit {
               },
             };
           });
+          this.repos = [...this.repos, ...nextResult];
         },
+
         (error) => {
           this.loading = of(false);
           this.error = error;
@@ -97,5 +98,10 @@ export class ReposComponent implements OnInit {
     this.router.navigate([
       `/repositories/${nameWithOwner[0]}/${nameWithOwner[1]}`,
     ]);
+  }
+
+  onScroll() {
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@scrolled!!");
+    this.onNextClick();
   }
 }

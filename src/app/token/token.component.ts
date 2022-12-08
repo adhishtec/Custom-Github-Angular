@@ -20,6 +20,7 @@ export class TokenComponent implements OnInit {
   constructor(private router: Router, private graphQLService: GraphQLService) {}
 
   ngOnInit(): void {
+    console.log("ngOnInit", this.tokenForm);
     sessionStorage.removeItem("github_token");
   }
 
@@ -29,11 +30,10 @@ export class TokenComponent implements OnInit {
       "github_token",
       this.tokenForm.controls["token"].value
     );
-
+    console.log("addToken", this.tokenForm);
     this.graphQLService.validateToken().subscribe(
       ({ data }: any) => {
         this.loading = false;
-        this.error = null;
         this.tokenForm.reset();
         if (data) {
           this.router.navigate(["/repositories"]);

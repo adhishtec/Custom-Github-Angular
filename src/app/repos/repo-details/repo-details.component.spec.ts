@@ -1,13 +1,19 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { RepoDetailsComponent } from "./repo-details.component";
+import {
+  ApolloTestingModule,
+  ApolloTestingController,
+} from "apollo-angular/testing";
+import { RouterTestingModule } from "@angular/router/testing";
 
-describe("RepoDetailsComponent", () => {
+describe("RepodetailsComponent", () => {
   let component: RepoDetailsComponent;
   let fixture: ComponentFixture<RepoDetailsComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
+      imports: [ApolloTestingModule, RouterTestingModule],
       declarations: [RepoDetailsComponent],
     }).compileComponents();
   });

@@ -1,5 +1,10 @@
-<div class="repositories-container">
-  <div *ngIf="loading | async" class="loader"></div>
+<div
+  class="repositories-container"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="50"
+  (scrolled)="onScroll()"
+>
   <div class="repositories-container__header" *ngIf="repos.length">
     <h1>Explore Public Repositories</h1>
     <h3 *ngIf="repos.length">
@@ -38,8 +43,5 @@
       <p>Updated {{ repo.node.updatedAt }}</p>
     </div>
   </div>
-  <div class="repositories-container__pagination" *ngIf="repos.length">
-    <button (click)="onPreviousClick()" [disabled]="isPreviousDisabled">Previous</button>
-    <button (click)="onNextClick()" [disabled]="isNextDisabled">Next</button>
-  </div>
+  <div *ngIf="loading | async" class="loader"></div>
 </div>

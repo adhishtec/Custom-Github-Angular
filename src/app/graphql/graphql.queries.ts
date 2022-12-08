@@ -11,7 +11,7 @@ const GET_LOGIN_INFORMATION = gql`
 const PUBLIC_REPOS = gql`
   query findPublicRepos($page: Int!, $startCursor: String, $endCursor: String) {
     search(
-      query: "is:public archived:false stars:>100 language:JavaScript sort:stars-asc"
+      query: "is:public archived:false stars:>300 language:JavaScript sort:stars-asc"
       type: REPOSITORY
       last: $page
       before: $endCursor
@@ -59,7 +59,12 @@ const PUBLIC_REPOS = gql`
 `;
 
 const PUBLIC_REPO_DETAILS = gql`
-  query ($name: String!, $owner: String!) {
+  query (
+    $name: String!
+    $owner: String!
+    $startCursor: String
+    $endCursor: String
+  ) {
     repository(name: $name, owner: $owner) {
       nameWithOwner
       owner {
@@ -94,8 +99,19 @@ const PUBLIC_REPO_DETAILS = gql`
           }
         }
       }
-      issues(last: 20, states: CLOSED) {
+      issues(
+        first: 10
+        states: CLOSED
+        before: $endCursor
+        after: $startCursor
+      ) {
         totalCount
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
         edges {
           node {
             title
@@ -106,7 +122,7 @@ const PUBLIC_REPO_DETAILS = gql`
             state
             updatedAt
             bodyText
-            labels(first: 5) {
+            labels(first: 10) {
               edges {
                 node {
                   name

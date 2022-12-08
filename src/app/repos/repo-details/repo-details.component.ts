@@ -2,9 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Apollo } from "apollo-angular";
 import { PUBLIC_REPO_DETAILS } from "../../graphql/graphql.queries";
-import {  of } from "rxjs";
+import { of } from "rxjs";
 import { map } from "rxjs/operators";
 import moment from "moment";
+import { Cursor, IssueObj } from "src/app/interfaces/github";
 
 @Component({
   selector: "app-repo-details",
@@ -15,11 +16,12 @@ export class RepoDetailsComponent implements OnInit {
   repository: any;
   token: any[] = [];
   error: any;
-  issues: any[] = [];
+  issues: IssueObj[] = [];
   labels: any;
   sidePanelProp: any;
   resp_issues = "";
   endCursor = "";
+  startCursor = "";
   repoName = "";
   repoOwnerName = "";
   loading = of(false);
@@ -33,11 +35,13 @@ export class RepoDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.repoName = this.route.snapshot.paramMap.get("repoName") || "";
     this.repoOwnerName = this.route.snapshot.paramMap.get("owner") || "";
-    this.getRepositoryDetails(this.repoName, this.repoOwnerName);
+    this.getRepositoryDetails({
+      name: this.repoName,
+      owner: this.repoOwnerName,
+    });
   }
 
-  getRepositoryDetails(name?: string, owner?: string) {
-    this.issues = [];
+  getRepositoryDetails({ name, owner, startCursor, endCursor }: Cursor = {}) {
     this.labels;
     this.loading = of(true);
     this.sidePanelProp;
@@ -48,6 +52,8 @@ export class RepoDetailsComponent implements OnInit {
         variables: {
           name,
           owner,
+          startCursor,
+          endCursor,
         },
       })
       .valueChanges.pipe(
@@ -55,13 +61,29 @@ export class RepoDetailsComponent implements OnInit {
           return result;
         })
       )
+      .pipe(
+        map((result: any) => {
+          this.startCursor = result.data?.repository.issues.pageInfo?.endCursor;
+          this.endCursor = result.data?.repository.issues.pageInfo.startCursor;
+          console.log(
+            ".....Start.....End.....",
+            startCursor,
+            ".......>>......>.....",
+            endCursor
+          );
+          console.log("----------->", result);
+          return result;
+        })
+      )
+
       .subscribe(({ data }: any) => {
-        this.repository = data.repository;
+        this.repository = data?.repository;
         this.loading = of(false);
         this.error = null;
         this.sidePanelProp = data.repository;
         this.labels = data.repository.labels.edges;
-        this.issues = data.repository.issues.edges.map((repo: any) => {
+
+        const next = data.repository.issues.edges.map((repo: any) => {
           return {
             ...repo,
             node: {
@@ -71,6 +93,8 @@ export class RepoDetailsComponent implements OnInit {
             },
           };
         });
+        this.issues = [...this.issues, ...next];
+        //   console.log(this.issues);
       });
   }
 
@@ -79,6 +103,18 @@ export class RepoDetailsComponent implements OnInit {
   }
 
   backToAuth() {
+    console.log("hello");
     this.router.navigate(["/token"]);
+  }
+  onScroll() {
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@scrolled!!");
+    // console.log("........>>>>>>", this.startCursor);
+    // console.log("........>>!!!!!!!!!>>>>", this.endCursor);
+    this.getRepositoryDetails({
+      name: this.repoName,
+      owner: this.repoOwnerName,
+      startCursor: this.startCursor,
+    });
+    // this.getRepositories();
   }
 }
